@@ -20,6 +20,7 @@ class CreateProductSkusTable extends Migration
             $table->integer('sales')->unsigned()->default(0)->comment('销量');
             $table->integer('stock')->unsigned()->default(0)->comment('库存');
             $table->decimal('price',10,2)->comment('属性价格');
+            $table->decimal('ot_price',10,2)->comment('原价');
             $table->string('image')->comment('图片');
             $table->json('attributes')->comment('规格与sku对应的值');
             $table->timestamps();
