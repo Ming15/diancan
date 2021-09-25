@@ -1,8 +1,8 @@
 <?php
 return [
     'miniProgram' => [
-        'app_id' => 'wxd3a0959f8e820d90',
-        'secret' => '26645a7dd9cada03cc10c29b49b81a21',
+        'app_id' => env('MINI_PROGRAM_APPID'),
+        'secret' => env('MINI_PROGRAM_SECRET'),
 
         // 下面为可选项
         // 指定 API 调用返回结果的类型：array(default)/collection/object/raw/自定义类名
