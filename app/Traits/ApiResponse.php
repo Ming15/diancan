@@ -9,6 +9,8 @@ trait ApiResponse
     protected $httpCode = 200;          // 默认HTTP状态码
     protected $successStatusCode = 1; // 默认成功逻辑码
     protected $errorStatusCode = 0;   // 默认失败逻辑码
+    protected $successMessage = 'success';
+    protected $errorMessage = 'error';
 
     protected function result($data, int $code, string $msg = '', int $status = 200)
     {
@@ -22,9 +24,10 @@ trait ApiResponse
     }
 
 
-    protected function success($data, $message = 'success')
+    protected function success($data, $message = '')
     {
         $code = $this->statusCode ?? $this->successStatusCode;
+        $message = $message ?? $this->successMessage;
 //        if (is_string($data)) {
 //            $message = $data;
 //            $data = [];
@@ -39,7 +42,7 @@ trait ApiResponse
         return $this;
     }
 
-    protected function error($data, $message = 'error')
+    protected function error($data, $message = '')
     {
         $code = $this->statusCode ?? $this->errorStatusCode;
         if (is_string($data)) {
