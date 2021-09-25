@@ -11,6 +11,17 @@ class ProductSku extends Model
 
     protected $table = 'product_skus';
 
+    protected $fillable = [
+        'product_id',
+        'title',
+        'sales',
+        'stock',
+        'price',
+        'ot_price',
+        'image',
+        'attributes',
+    ];
+
     public function product()
     {
         return $this->belongsTo(Product::class,'product_id', 'id');
