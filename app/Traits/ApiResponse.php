@@ -24,7 +24,7 @@ trait ApiResponse
     }
 
 
-    protected function success($data, $message = '')
+    protected function success($data, $message = null)
     {
         $code = $this->statusCode ?? $this->successStatusCode;
         $message = $message ?? $this->successMessage;
@@ -42,13 +42,14 @@ trait ApiResponse
         return $this;
     }
 
-    protected function error($data, $message = '')
+    protected function error($data, $message = null)
     {
         $code = $this->statusCode ?? $this->errorStatusCode;
-        if (is_string($data)) {
-            $message = $data;
-            $data = [];
-        }
+        $message = $message ?? $this->successMessage;
+//        if (is_string($data)) {
+//            $message = $data;
+//            $data = [];
+//        }
 
         return $this->response($data, $code, $message);
     }
