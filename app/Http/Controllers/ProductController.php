@@ -16,7 +16,7 @@ class ProductController extends Controller
     {
         // TODO 月售没做，现在只展示了总销量
         $result = ProductCategory::with(['products' => function ($query) {
-            return $query->where('on_sale', 1)->select('id', 'category_id', 'product_name', 'unit_name', 'price', 'sales');
+            return $query->where('on_sale', 1)->select('id', 'category_id', 'product_name', 'unit_name', 'price', 'sales', 'spec_type', 'image');
         }])->get(['id', 'category_name']);
 
         return $this->success($result);
@@ -40,6 +40,7 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
+        // TODO 商品的价格不能直接读表，应该是当前默认选中的规格的价格
         $attributes = $product->productSkus()->get(['attributes'])->pluck('attributes')->transform(function ($value) {
             $value = json_decode($value, true);
             return $value;

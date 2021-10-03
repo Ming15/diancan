@@ -1,12 +1,12 @@
 <?php
 
-namespace {{ namespace }};
+namespace App\Http\Controllers;
 
-use {{ rootNamespace }}Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Models\Product;
 use App\Traits\ApiResponse;
+use Illuminate\Http\Request;
 
-class {{ class }} extends Controller
+class ProductSkuController extends Controller
 {
     use ApiResponse;
     /**
@@ -34,11 +34,16 @@ class {{ class }} extends Controller
      * Display the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Product $product, Request $request)
     {
-        //
+        $arrtibutes = $request->input('attributes');
+
+        $result = $product->productSkus()
+            ->whereJsonContains('attributes', $arrtibutes)
+            ->first(['id', 'product_id', 'title', 'price', 'ot_price', 'image']);
+
+        return $this->success($result);
     }
 
     /**

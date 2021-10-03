@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProductSkuController;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,6 +31,8 @@ Route::middleware('jwt.auth')->group(function () {
     Route::get('products', [ProductController::class, 'index']);
     // 展示特定商品
     Route::get('products/{product}', [ProductController::class, 'show']);
+    // 特定商品规格信息
+    Route::post('products/{product}/sku', [ProductSkuController::class, 'show']);
 });
 
 
