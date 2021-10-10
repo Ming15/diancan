@@ -12,12 +12,20 @@ class ProductController extends Controller
 {
     use ApiResponse;
 
-    public function index()
+    public function index(Request $request)
     {
+        $keyword = $request->input('keyword'); // 商品关键字
+
         // TODO 月售没做，现在只展示了总销量
-        $result = ProductCategory::with(['products' => function ($query) {
-            return $query->where('on_sale', 1)->select('id', 'category_id', 'product_name', 'unit_name', 'price', 'sales', 'spec_type', 'image');
-        }])->get(['id', 'category_name']);
+        $result = ProductCategory::with(['products' => function ($query) use ($keyword) {
+            return $query->where('on_sale', 1)
+                ->when($keyword, function ($query, $keyword) {
+                    return $query->where('product_name', 'like', "%{$keyword}%");
+                })
+                ->select('id', 'category_id', 'product_name', 'unit_name', 'price', 'sales', 'spec_type', 'image');
+        }])
+
+            ->get(['id', 'category_name']);
 
         return $this->success($result);
     }
