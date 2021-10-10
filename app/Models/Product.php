@@ -14,6 +14,8 @@ class Product extends Model
 
     protected $appends = ['image_url', 'slider_image_urls'];
 
+
+
     public function productSkus()
     {
         return $this->hasMany(ProductSku::class,'product_id', 'id');

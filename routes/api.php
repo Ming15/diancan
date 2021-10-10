@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductSkuController;
+use App\Http\Controllers\OrderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,6 +34,8 @@ Route::middleware('jwt.auth')->group(function () {
     Route::get('products/{product}', [ProductController::class, 'show']);
     // 特定商品规格信息
     Route::post('products/{product}/sku', [ProductSkuController::class, 'show']);
+    // 创建订单
+    Route::post('orders', [OrderController::class, 'store']);
 });
 
 
