@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateOrderRequest;
+use App\Jobs\CancelOrder;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\ProductSku;
 use App\Traits\ApiResponse;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -135,7 +137,12 @@ class OrderController extends Controller
                 $product::query()->where('id', $productId)->increment('sales', $value['num']);
             }
 
+            // CancelOrder::dispatch($order)->afterCommit()->onQueue('cancelOrder')->delay(Carbon::now()->addMinutes(15));
             DB::commit();
+
+            // 将订单放入到队列里面，超过15分钟未支付则自动关闭订单，注意，这里没有加【afterCommit方法】，是因为【afterCommit方法】是用在【在事务中分发任务】时使用（看我上面注释的）。现在这里是在commit之后，所以不需要用此方法
+            CancelOrder::dispatch($order)->onQueue('cancelOrder')->delay(Carbon::now()->addSeconds(15));
+
             return $this->success([], '订单创建成功');
         } catch (\Exception $exception) {
             DB::rollBack();
