@@ -36,6 +36,8 @@ Route::middleware('jwt.auth')->group(function () {
     Route::post('products/{product}/sku', [ProductSkuController::class, 'show']);
     // 创建订单
     Route::post('orders', [OrderController::class, 'store']);
+    // 取消订单
+    Route::put('order/{order}/cancel', [OrderController::class, 'cancel']);
 });
 
 

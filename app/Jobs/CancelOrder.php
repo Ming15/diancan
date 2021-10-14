@@ -52,6 +52,9 @@ class CancelOrder implements ShouldQueue
                     // 订单所购买的库存都加回去对应的商品
                     $item->productSku()->increment('stock', $item->num);
                     $item->product()->increment('stock', $item->num);
+                    // 减销量
+                    $item->productSku()->decrement('sales', $item->num);
+                    $item->product()->decrement('sales', $item->num);
                 }
                 DB::commit();
             } catch (\Exception $exception) {

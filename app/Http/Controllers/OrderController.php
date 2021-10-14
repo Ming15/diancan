@@ -140,7 +140,7 @@ class OrderController extends Controller
             // CancelOrder::dispatch($order)->afterCommit()->onQueue('cancelOrder')->delay(Carbon::now()->addMinutes(15));
             DB::commit();
 
-            // 将订单放入到队列里面，超过15分钟未支付则自动关闭订单，注意，这里没有加【afterCommit方法】，是因为【afterCommit方法】是用在【在事务中分发任务】时使用（看我上面注释的）。现在这里是在commit之后，所以不需要用此方法
+            // 将订单放入到队列里面，超过15分钟未支付则自动关闭订单，注意，这里没有加【afterCommit方法】，是因为【afterCommit方法】是用在【在事务"中"分发任务】时使用（看我上面注释的）。现在这里是在commit之后，所以不需要用此方法
             CancelOrder::dispatch($order)->onQueue('cancelOrder')->delay(Carbon::now()->addSeconds(15));
 
             return $this->success([], '订单创建成功');
@@ -191,5 +191,40 @@ class OrderController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    //
+    public function cancel(Order $order)
+    {
+        // TODO 这里本来想加锁的，因为有可能在判断订单状态和改订单状态之间如果有另外一个请求刚好把订单状态改了为已支付，然后下面又改为已取消，就会有问题，
+        // TODO 但是这种情况只会出现在很高并发下才会出现，取消订单并不是高并发操作，所以我感觉可以不对这种情况做处理
+
+        if ($order->status != Order::UNPAID) {
+            return $this->error([], '无法取消，订单状态有误');
+        }
+
+        DB::beginTransaction();
+        try {
+            $order->status = Order::CANCELLED;
+            $order->save();
+
+            foreach ($order->orderItems as $item) {
+                // 订单所购买的库存都加回去对应的商品
+                $item->productSku()->increment('stock', $item->num);
+                $item->product()->increment('stock', $item->num);
+                // 销量减回去
+                $item->productSku()->decrement('sales', $item->num);
+                $item->product()->decrement('sales', $item->num);
+            }
+
+            DB::commit();
+            return $this->success([], '取消成功');
+
+        } catch (\Exception $exception) {
+            DB::rollBack();
+            return $this->error([], '取消失败');
+        }
+
+
     }
 }
