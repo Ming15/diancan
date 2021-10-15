@@ -57,7 +57,7 @@ class OrderController extends Controller
             foreach ($skuIds as $value) {
                 $lock = Cache::lock('product_sku_id_'.$value.'_lock', 10);
                 if (!$lock->get()) {
-                    return $this->error([], '购买失败，请稍后再试');
+                    return $this->error([], '请勿重复提交');
                 }
                 $lockResult[] = $lock;
             }
@@ -163,11 +163,20 @@ class OrderController extends Controller
      * Display the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Order $order, $id)
     {
-        //
+        $order = $order::query()->find($id);
+        if (!$order) {
+            return $this->error([],'此订单不存在，请刷新页面');
+        }
+
+        $result = $order::query()
+            ->with('shop:id,shop_name,address')
+            ->where('id', $id)
+            ->first(['id', 'order_no', 'total_price', 'status', 'shop_id', 'created_at', 'desk_num', 'take_time', 'order_type', 'order_info']);
+
+        return $this->success($result);
     }
 
     /**

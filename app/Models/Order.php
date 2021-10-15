@@ -24,6 +24,12 @@ class Order extends Model
         'order_info',
     ];
 
+    protected $appends = ['status_text'];
+
+    public $casts = [
+        'order_info' => 'json'
+    ];
+
     const DELIVERY_TO_TABLE = 0; // 送餐到桌
     const PACK_AND_TAKE_AWAY = 1; // 打包外带
 
@@ -36,6 +42,14 @@ class Order extends Model
     public static $order_type = [
         self::DELIVERY_TO_TABLE => '送餐到桌',
         self::PACK_AND_TAKE_AWAY => '打包外带',
+    ];
+
+    public static $status = [
+        self::UNPAID => '待支付',
+        self::FINISHED => '已完成',
+        self::CANCELLED => '已取消',
+        self::REFUND => '退款售后',
+        self::CLOSED => '已关闭',
     ];
 
     public function orderItems()
@@ -68,5 +82,10 @@ class Order extends Model
         \Log::warning('find order no failed');
 
         return false;
+    }
+
+    public function getStatusTextAttribute()
+    {
+        return self::$status[$this->status];
     }
 }
