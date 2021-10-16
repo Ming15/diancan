@@ -6,6 +6,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductSkuController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\ShopController;
 
 /*
 |--------------------------------------------------------------------------
@@ -40,6 +41,8 @@ Route::middleware('jwt.auth')->group(function () {
     Route::put('orders/{order}/cancel', [OrderController::class, 'cancel']);
     // 订单详情
     Route::get('orders/{id}', [OrderController::class, 'show']);
+    // 商店详情
+    Route::get('shops/{id}', [ShopController::class, 'show'])->name('shops.show');
 
 });
 

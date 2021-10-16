@@ -164,8 +164,9 @@ class OrderController extends Controller
      *
      * @param  int  $id
      */
-    public function show(Order $order, $id)
+    public function show(Order $order, int $id)
     {
+        // 获取当前用户
         $order = $order::query()->find($id);
         if (!$order) {
             return $this->error([],'此订单不存在，请刷新页面');
@@ -202,7 +203,7 @@ class OrderController extends Controller
         //
     }
 
-    //
+    // 取消订单
     public function cancel(Order $order)
     {
         // TODO 这里本来想加锁的，因为有可能在判断订单状态和改订单状态之间如果有另外一个请求刚好把订单状态改了为已支付，然后下面又改为已取消，就会有问题，
@@ -211,6 +212,7 @@ class OrderController extends Controller
         if ($order->status != Order::UNPAID) {
             return $this->error([], '无法取消，订单状态有误');
         }
+
 
         DB::beginTransaction();
         try {
